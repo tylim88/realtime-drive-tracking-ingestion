@@ -1,2 +1,2 @@
-export * from './__init'
+export * from './__client'
 export * from './schema'
