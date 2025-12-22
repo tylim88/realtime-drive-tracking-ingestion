@@ -32,9 +32,9 @@
 	"dependencies": {
 		"@elysiajs/node": "^1.4.2",
 		"@neondatabase/serverless": "^1.0.2",
-		"@upstash/redis": "^1.35.8",
 		"dotenv": "^17.2.3",
 		"drizzle-orm": "^0.45.1",
-		"elysia": "^1.4.19"
+		"elysia": "^1.4.19",
+		"ioredis": "^5.8.2"
 	}
 }
