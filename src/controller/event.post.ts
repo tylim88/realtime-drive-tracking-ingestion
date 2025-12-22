@@ -9,12 +9,11 @@ export const event_post = new Elysia().post(
 			data: { driver_id, latitude, longitude, timestamp },
 		},
 	}) => {
-		const recorded_at = timestamp
 		const p1 = driverLocations_pub(driver_id, [
 			{
 				latitude,
 				longitude,
-				recorded_at,
+				recorded_at: +new Date(timestamp),
 			},
 		])
 		const p2 = db
@@ -35,6 +34,7 @@ export const event_post = new Elysia().post(
 					longitude,
 				},
 			})
+		await Promise.allSettled([p1, p2])
 	},
 	{
 		// data type validation
