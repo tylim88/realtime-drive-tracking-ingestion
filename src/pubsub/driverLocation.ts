@@ -37,7 +37,7 @@ export const driverLocations_sub = async (callback: (data: Data) => void) => {
 				// can add runtime validation if needed
 				if (data) callback(JSON.parse(data))
 			})
-			// prevent cpu exhaustion if anything is wrong with xread
+			// prevent cpu exhaustion if something is wrong with xread
 			if (!reply)
 				await new Promise((res) => {
 					setTimeout(res, 100)
