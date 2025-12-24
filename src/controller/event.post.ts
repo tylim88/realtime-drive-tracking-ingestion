@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia'
-import { driverLocations_schema, db } from '@/db'
+import { db, driverLocations_schema } from '@/db'
 import { driverLocations_pub } from '@/pubsub'
 
 export const event_post = () =>

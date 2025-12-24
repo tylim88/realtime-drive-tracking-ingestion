@@ -4,14 +4,14 @@
 	"version": "0.0.0",
 	"private": "true",
 	"scripts": {
-		"dev": "npm-run-all -p dev:ingestion dev:subscription",
+		"dev": "npm-run-all -p dev:ingestion dev:subscription dev:frontend",
 		"dev:ingestion": "tsx watch src/ingestion.ts",
 		"dev:subscription": "tsx watch src/subscription.ts",
+		"dev:frontend": "cd consumer && npm run dev",
 		"source": "tsx watch src/source.ts",
-		"setup": "rm -rf node_modules && npm i && git init && husky",
+		"setup": "rm -rf node_modules && npm i && husky && cd consumer && rm -rf node_modules && npm i",
 		"prepublishOnly": "npm run build",
-		"build": "pkgroll --clean-dist && tsup",
-		"test": "vitest",
+		"build": "tsup",
 		"lint": "npx @biomejs/biome check --write"
 	},
 	"lint-staged": {
@@ -24,6 +24,7 @@
 		"@biomejs/biome": "^2.3.10",
 		"@vitest/coverage-v8": "^2.1.2",
 		"drizzle-kit": "^0.31.8",
+		"elysia": "^1.4.19",
 		"husky": "^9.1.6",
 		"ky": "^1.14.1",
 		"lint-staged": "^15.2.10",
@@ -36,11 +37,11 @@
 		"vitest": "^2.1.2"
 	},
 	"dependencies": {
+		"@elysiajs/eden": "^1.4.6",
 		"@elysiajs/node": "^1.4.2",
 		"@neondatabase/serverless": "^1.0.2",
 		"dotenv": "^17.2.3",
 		"drizzle-orm": "^0.45.1",
-		"elysia": "^1.4.19",
 		"ioredis": "^5.8.2"
 	}
 }

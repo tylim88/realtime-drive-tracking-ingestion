@@ -1,7 +1,7 @@
-import ky from 'ky'
-import { db, driverLocations_schema } from '@/db'
 import { desc } from 'drizzle-orm'
+import ky from 'ky'
 import randomFloat from 'random-float'
+import { db, driverLocations_schema } from '@/db'
 
 const generateData = async () => {
 	const data = await db

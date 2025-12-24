@@ -1,2 +1,2 @@
-export * from './event.post'
 export * from './driverLocation.ws'
+export * from './event.post'
