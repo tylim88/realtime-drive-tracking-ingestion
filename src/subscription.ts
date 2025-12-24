@@ -9,3 +9,4 @@ new Elysia({ adapter: node() })
 	})
 
 // https://medium.com/@ys.yogendra22/system-design-real-time-car-tracking-app-64ce6db83898
+// https://dev.to/codexam/building-a-scalable-real-time-driver-tracking-system-26ei

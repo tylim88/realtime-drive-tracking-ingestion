@@ -3,7 +3,7 @@ import { node } from '@elysiajs/node'
 import { driverLocations_schema, db } from '@/db'
 import { driverLocations_sub } from '@/pubsub'
 import { gte, and, eq, sql } from 'drizzle-orm'
-import { Type } from '@sinclair/typebox'
+import { Type, type Static } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'
 
 export const driverLocation_ws = () => {
@@ -12,6 +12,7 @@ export const driverLocation_ws = () => {
 	const driverLocation_api = new Elysia({ adapter: node() }).ws(
 		'/driverLocation',
 		{
+			// validate query
 			query: t.Object({
 				driver_id: t.String(),
 				since: t.String({ format: 'date-time' }),
@@ -24,17 +25,23 @@ export const driverLocation_ws = () => {
 					.Transform(t.String())
 					.Decode((v) => {
 						if (Value.Check(Type.Integer({ minimum: 1 }), Number(v))) return v
-						throw new Error('not integer')
+						throw new Error('interval_value must be an integer larger than 1')
 					})
 					.Encode((v) => v),
 			}),
+			// validate response
+			response,
+			// when websocket open
 			open: async (ws) => {
 				const { driver_id, since, interval_type, interval_value } =
 					ws.data.query
 
+				if (!subscribers.has(driver_id)) subscribers.set(driver_id, new Set())
+				subscribers.get(driver_id)?.add(ws)
+
 				const data = await db
 					// drizzle doesn't fully support timescale db
-					// have to type cast here using generic
+					// have to type cast with generic
 					.select({
 						// https://www.tigerdata.com/docs/api/latest/hyperfunctions/time_bucket
 						time: sql<Date>`time_bucket(${interval_value} ${interval_type}, ${driverLocations_schema.recorded_at})`.as(
@@ -52,9 +59,16 @@ export const driverLocation_ws = () => {
 					)
 					.orderBy(driverLocations_schema.recorded_at)
 
-				if (!subscribers.has(driver_id)) subscribers.set(driver_id, new Set())
-				subscribers.get(driver_id)?.add(ws)
+				ws.send({
+					type: 'data_old',
+					data: data.map(({ latitude_average, longitude_average, time }) => ({
+						latitude_average,
+						longitude_average,
+						time: time.toISOString(),
+					})),
+				})
 			},
+			// when websocket close
 			close: (ws) => {
 				const { driver_id } = ws.data.query
 				subscribers.get(driver_id)?.delete(ws)
@@ -68,13 +82,42 @@ export const driverLocation_ws = () => {
 	const subscribers = new Map<
 		string,
 		Set<
+			// get elysia websocket type
 			Parameters<
 				NonNullable<Parameters<(typeof driverLocation_api)['ws']>[1]['open']>
 			>[0]
 		>
 	>()
 
-	driverLocations_sub(({ data, driver_id }) => {})
+	driverLocations_sub(({ driver_id, latitude, longitude, recorded_at }) => {
+		subscribers.get(driver_id)?.forEach((ws) => {
+			ws.send({
+				type: 'data_new',
+				latitude,
+				longitude,
+				recorded_at,
+			} satisfies Static<typeof response>)
+		})
+	})
 
 	return driverLocation_api
 }
+
+const response = t.Union([
+	t.Object({
+		type: t.Literal('data_old'),
+		data: t.Array(
+			t.Object({
+				time: t.String({ format: 'date-time' }),
+				latitude_average: t.Number(),
+				longitude_average: t.Number(),
+			}),
+		),
+	}),
+	t.Object({
+		type: t.Literal('data_new'),
+		recorded_at: t.String({ format: 'date-time' }),
+		latitude: t.Number(),
+		longitude: t.Number(),
+	}),
+])

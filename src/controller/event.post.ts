@@ -10,13 +10,12 @@ export const event_post = () =>
 				data: { driver_id, latitude, longitude, timestamp },
 			},
 		}) => {
-			const p1 = driverLocations_pub(driver_id, [
-				{
-					latitude,
-					longitude,
-					recorded_at: +new Date(timestamp),
-				},
-			])
+			const p1 = driverLocations_pub({
+				driver_id,
+				latitude,
+				longitude,
+				recorded_at: timestamp,
+			})
 			const p2 = db
 				.insert(driverLocations_schema)
 				.values({
@@ -38,6 +37,7 @@ export const event_post = () =>
 			await Promise.allSettled([p1, p2])
 		},
 		{
+			// validate body
 			body: t.Object({
 				event: t.Object({
 					name: t.Literal('driver_location'),
