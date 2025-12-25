@@ -27,16 +27,25 @@ const generateData = async () => {
 	setInterval(async () => {
 		initialData = await Promise.all(
 			initialData.map(
-				async ({
-					event,
-					data: { latitude, longitude, timestamp, ...rest },
-				}) => {
+				async (
+					{ event, data: { latitude, longitude, timestamp, ...rest } },
+					index,
+				) => {
+					const modulus = index % 4
+					const direction =
+						modulus === 1
+							? { x: 1, y: 1 }
+							: modulus === 2
+								? { x: -1, y: 1 }
+								: modulus === 3
+									? { x: 1, y: -1 }
+									: { x: -1, y: -1 }
 					const data = {
 						event,
 						data: {
 							...rest,
-							latitude: latitude + randomFloat(0.00005, 0.0001),
-							longitude: longitude + randomFloat(0.00005, 0.0001),
+							latitude: latitude + randomFloat(0.00005, 0.0001) * direction.y,
+							longitude: longitude + randomFloat(0.00005, 0.0001) * direction.x,
 							timestamp: new Date().toISOString(),
 						},
 					}
