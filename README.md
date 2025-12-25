@@ -46,7 +46,7 @@ npm run dev
 
 to view the frontend open http://localhost:5173
 
-select a driver and pick a date time then click "connect"
+select a driver and pick a date time then click `connect`
 
 ![Alt Text](./img/preview.png)
 
