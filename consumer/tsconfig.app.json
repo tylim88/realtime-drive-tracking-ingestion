@@ -28,7 +28,8 @@
 		/* absolute path, use together with vite-tsconfig-paths */
 		"baseUrl": "",
 		"paths": {
-			"@/*": ["src/*"]
+			"@/*": ["src/*"],
+			"#/*": ["../src/controller/*"]
 		}
 	},
 	"include": ["src"]
