@@ -58,7 +58,7 @@ const generateData = async () => {
 				},
 			),
 		)
-	}, 5000)
+	}, 1000)
 }
 generateData()
 

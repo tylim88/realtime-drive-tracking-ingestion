@@ -1,4 +1,4 @@
-import { Type } from '@sinclair/typebox'
+import { type Static, Type } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'
 import { and, desc, eq, gte } from 'drizzle-orm'
 import { Elysia, t } from 'elysia'
@@ -53,24 +53,7 @@ export const driverLocation_ws = () => {
 			since: t.String({ format: 'date-time' }),
 		}),
 		// validate response
-		response: t.Union([
-			t.Object({
-				type: t.Literal('data_old'),
-				data: t.Array(
-					t.Object({
-						recorded_at: t.String({ format: 'date-time' }),
-						latitude: t.Number(),
-						longitude: t.Number(),
-					}),
-				),
-			}),
-			t.Object({
-				type: t.Literal('data_new'),
-				recorded_at: t.String({ format: 'date-time' }),
-				latitude: t.Number(),
-				longitude: t.Number(),
-			}),
-		]),
+		response,
 		close: (ws) => {
 			const { driver_id_numeric } = ws.data.query
 			const driver_id = `driver_${driver_id_numeric.padStart(3, '0')}`
@@ -95,7 +78,7 @@ export const driverLocation_ws = () => {
 
 	// use map over object because we going to change the key and value often https://stackoverflow.com/a/37994079/5338829
 	// use Set to make sure the ws object stored is unique
-	// have to use this method because global websocket publish seem buggy https://github.com/elysiajs/elysia/issues/781
+	// this method is used because global websocket publish seem buggy https://github.com/elysiajs/elysia/issues/781, resulting in not able to publish outside of elysia callback
 	const subscribers = new Map<
 		string,
 		Set<
@@ -110,8 +93,29 @@ export const driverLocation_ws = () => {
 				latitude,
 				longitude,
 				recorded_at,
-			})
+				// ws.send type is not properly infered outside of elysia callback
+				// have to typecheck it manually with satisfies
+			} satisfies Static<typeof response>)
 		})
 	})
 	return api
 }
+
+const response = t.Union([
+	t.Object({
+		type: t.Literal('data_old'),
+		data: t.Array(
+			t.Object({
+				recorded_at: t.String({ format: 'date-time' }),
+				latitude: t.Number(),
+				longitude: t.Number(),
+			}),
+		),
+	}),
+	t.Object({
+		type: t.Literal('data_new'),
+		recorded_at: t.String({ format: 'date-time' }),
+		latitude: t.Number(),
+		longitude: t.Number(),
+	}),
+])
