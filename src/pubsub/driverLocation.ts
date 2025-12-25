@@ -32,13 +32,11 @@ export const driverLocations_sub = async (callback: (data: Data) => void) => {
 			)
 			reply?.[0]?.[1].forEach(([newLastId, [, data]]) => {
 				lastId = newLastId
-				// console.log(data)
 				// JSON.parse return any but i think this is fine here
 				// because we already make driverLocations_pub receives the correct type
 				// can add runtime validation if needed
 				if (data) callback(JSON.parse(data))
 			})
-			// console.log('================')
 			// prevent cpu exhaustion if something is wrong with xread
 			if (!reply)
 				await new Promise((res) => {

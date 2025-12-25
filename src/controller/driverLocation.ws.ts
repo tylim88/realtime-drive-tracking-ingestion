@@ -29,7 +29,7 @@ export const driverLocation_ws = () => {
 					),
 				)
 				.orderBy(desc(driverLocations_schema.recorded_at))
-				.limit(5000)
+				.limit(1000)
 
 			ws.send({
 				type: 'data_old',

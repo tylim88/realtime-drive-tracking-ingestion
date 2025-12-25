@@ -1,12 +1,5 @@
 import { treaty } from '@elysiajs/eden'
-import {
-	Button,
-	Flex,
-	NumberInput,
-	Select,
-	SimpleGrid,
-	Text,
-} from '@mantine/core'
+import { Button, Flex, NumberInput, SimpleGrid, Text } from '@mantine/core'
 import { DateTimePicker } from '@mantine/dates'
 import { notifications } from '@mantine/notifications'
 import {
@@ -18,16 +11,13 @@ import dayjs from 'dayjs'
 import { useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import type { driverLocation_ws } from '#/driverLocation.ws'
+import { useStoreMarks } from '@/store'
 
-type App = typeof driverLocation_ws
+// https://github.com/oven-sh/bun/issues/23725
+// you will not see the type error if you open the frontend folder in new workbench
+const client = treaty<ReturnType<typeof driverLocation_ws>>('localhost:3001')
 
-// @ts-expect-error https://github.com/oven-sh/bun/issues/23725
-const client = treaty<App>('localhost:3001')
-
-type Marks = { latitude: number; longitude: number; recorded_at: string }[]
-
-export const Form = ({ children }: { children: (marks: Marks) => void }) => {
-	const [marks, setMarks] = useState<Marks>([])
+export const Form = () => {
 	const [isConnected, setIsConnected] = useState(false)
 	const latestTimestamp = useRef(0)
 	const wsRef = useRef<{ close: () => void }>(null)
@@ -105,38 +95,31 @@ export const Form = ({ children }: { children: (marks: Marks) => void }) => {
 							})
 							wsRef.current = ws
 							ws.subscribe(({ data }) => {
-								console.log('WebSocket Data:', data)
 								if (data.type === 'data_old') {
-									setMarks((marks) => {
-										const arr = [...marks, ...data.data].sort(
-											(a, b) =>
-												+new Date(b.recorded_at) - +new Date(a.recorded_at),
-										)
+									useStoreMarks.setState((state) => {
 										latestTimestamp.current = +new Date(
-											arr[0]?.recorded_at || '',
+											data.data[0]?.recorded_at || '',
 										)
-										return arr
+
+										state.marks = data.data
 									})
 								} else {
-									setMarks((marks) => {
+									useStoreMarks.setState((state) => {
 										// if the data is older than the latest timestamp, don't prepend it
-										if (
-											+new Date(data.recorded_at) <= latestTimestamp.current
-										) {
-											return marks
-										}
+										if (+new Date(data.recorded_at) <= latestTimestamp.current)
+											return
 										const arr = [
 											{
 												latitude: data.latitude,
 												longitude: data.longitude,
 												recorded_at: data.recorded_at,
 											},
-											...marks,
+											...state.marks,
 										]
 										latestTimestamp.current = +new Date(
 											arr[0]?.recorded_at || '',
 										)
-										return arr
+										state.marks = arr
 									})
 								}
 							})
@@ -173,7 +156,6 @@ export const Form = ({ children }: { children: (marks: Marks) => void }) => {
 					Monitoring driver {getValues('driver_id_numeric')}
 				</Text>
 			)}
-			{children(marks)}
 		</>
 	)
 }

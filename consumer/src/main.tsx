@@ -5,7 +5,7 @@ import '@mantine/core/styles.css'
 import '@mantine/notifications/styles.css'
 import '@mantine/dates/styles.css'
 import { Notifications } from '@mantine/notifications'
-import { Screen_Home } from '@/home'
+import { Screen_Home } from '@/Screens'
 
 const root = document.getElementById('root')
 
