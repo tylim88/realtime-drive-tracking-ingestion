@@ -22,7 +22,7 @@ curl -fsSL https://bun.sh/install | bash
   
 ### Second Step
 
-install the dependencies
+install the dependencies for both servers and frontend
 
 ```sh
 npm run setup
@@ -30,7 +30,37 @@ npm run setup
 
 Optional: install biomejs extension for code formatting https://marketplace.visualstudio.com/items?itemName=biomejs.biome
 
-and we are done with setup
+### Third Step
+
+create a `.env` file in the root directory with the following content
+
+```env
+DATABASE_URL=
+REDIS_URL=
+```
+
+### Fourth Step
+
+setup a neon psql database https://neon.tech/
+
+![neon setup step 1](./img/neon1.png)
+![neon setup step 2](./img/neon2.png)
+
+get the connection string and put it in the `.env` file as `DATABASE_URL`
+
+### Fifth Step
+
+setup a upstash redis https://upstash.com/
+
+![upstash setup step 1](./img/upstash1.png)
+Select your database, then
+![upstash setup step 2](./img/upstash2.png)
+
+get the connection string and put it in the `.env` file as `REDIS_URL`
+
+finally you should have something like this in your `.env` file
+
+![env](./img/env.png)
 
 ## Run
 
@@ -48,7 +78,7 @@ to view the frontend open http://localhost:5173
 
 select a driver and pick a date time then click `connect`
 
-![Alt Text](./img/preview.png)
+![preview](./img/preview.png)
 
 ### Generate Data
 
