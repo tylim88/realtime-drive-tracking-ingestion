@@ -48,6 +48,14 @@ setup a neon psql database https://neon.tech/
 
 get the connection string and put it in the `.env` file as `DATABASE_URL`
 
+then run the following command to create the database schema and apply migrations
+
+```sh
+npx drizzle-kit generate
+npx drizzle-kit migrate
+```
+
+
 ### Fifth Step
 
 setup a upstash redis https://upstash.com/
