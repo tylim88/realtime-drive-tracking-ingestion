@@ -9,10 +9,10 @@ import {
 export const driverLocations_schema = pgTable(
 	'driver_locations',
 	{
-		driver_id: varchar('driver_id', { length: 30 }).notNull(),
-		latitude: doublePrecision('latitude').notNull(),
-		longitude: doublePrecision('longitude').notNull(),
-		recorded_at: timestamp('recorded_at', {
+		driver_id: varchar({ length: 30 }).notNull(),
+		latitude: doublePrecision().notNull(),
+		longitude: doublePrecision().notNull(),
+		recorded_at: timestamp({
 			precision: 3,
 			withTimezone: true,
 		}).notNull(),

@@ -1,0 +1,1 @@
+ALTER TABLE "driver_locations" ALTER COLUMN "driver_id" SET DATA TYPE varchar(30);
