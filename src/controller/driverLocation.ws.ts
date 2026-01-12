@@ -77,7 +77,7 @@ export const driverLocation_ws = () => {
 	})
 
 	// use map over object because we going to change the key and value often https://stackoverflow.com/a/37994079/5338829
-	// use Set to make sure the ws object stored is unique
+	// use Set to make sure the ws object stored is unique (actually doesn't matter that much)
 	// this method is used because global websocket publish seem buggy https://github.com/elysiajs/elysia/issues/781, resulting in not able to publish outside of elysia callback
 	const subscribers = new Map<
 		string,
@@ -86,6 +86,7 @@ export const driverLocation_ws = () => {
 			Parameters<NonNullable<Parameters<(typeof api)['ws']>[1]['open']>>[0]
 		>
 	>()
+	// do not listen in ws open event because we only need one redis connection
 	driverLocations_sub(({ driver_id, latitude, longitude, recorded_at }) => {
 		subscribers.get(driver_id)?.forEach((ws) => {
 			ws.send({
