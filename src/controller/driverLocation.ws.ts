@@ -69,10 +69,16 @@ export const driverLocation_ws = () => {
 			} else {
 				console.error('no related subscribers')
 			}
-			// const isDeleteSuccessful = subscribers.get(driver_id)?.delete(ws)
-			// if (!isDeleteSuccessful)
-			// 	console.error('warning, delete ws unsuccessful, may cause memory leak')
-			if (!subscribers.get(driver_id)?.size) subscribers.delete(driver_id)
+			// remove single ws instance when ws connection close
+			if (!subscribers.get(driver_id)?.delete(ws))
+				console.error('warning, delete ws unsuccessful, may cause memory leak')
+
+			// if no users listening to specific driver, remove all ws instance
+			if (!subscribers.get(driver_id)?.size && !subscribers.delete(driver_id)) {
+				console.error(
+					`warning, delete all ${driver_id} ws unsuccessful, may cause memory leak`,
+				)
+			}
 		},
 	})
 
