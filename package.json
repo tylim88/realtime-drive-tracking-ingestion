@@ -4,9 +4,10 @@
 	"version": "0.0.0",
 	"private": "true",
 	"scripts": {
-		"dev": "npm-run-all -p dev:ingestion dev:consumer dev:frontend",
+		"dev": "npm-run-all -p dev:ingestion dev:consumer dev:worker dev:frontend",
 		"dev:ingestion": "bun --watch src/ingestion.ts",
 		"dev:consumer": "bun --watch src/consumer.ts",
+		"dev:worker": "bun --watch src/worker.ts",
 		"dev:frontend": "cd FrontEnd && npm run dev",
 		"source": "tsx watch src/source.ts",
 		"setup": "rm -rf node_modules && bun install && husky && cd FrontEnd && rm -rf node_modules && npm i",

@@ -74,7 +74,7 @@ finally you should have something like this in your `.env` file
 
 ### Servers
 
-to run servers(there are 2 servers) and frontend
+to run 2 servers(ingestion and consumer), 1 process (worker) and one frontend
 
 ```sh
 npm run dev
@@ -97,6 +97,10 @@ open a new terminal and run
 ```sh
 npm run source
 ```
+
+## Power Point Presentation
+
+https://1drv.ms/p/c/51b9de335e9a5f2e/IQAlsqsWA_2-QLYljlmgBqRTAdZJqY5weowPgedLp4xYUv4?e=wsBnhN
 
 ## Video Demo
 

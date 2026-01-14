@@ -1,5 +1,4 @@
 import { Elysia, t } from 'elysia'
-import { db, driverLocations_schema } from '@/db'
 import { driverLocations_pub } from '@/pubsub'
 
 export const event_post = () =>
@@ -10,31 +9,12 @@ export const event_post = () =>
 				data: { driver_id, latitude, longitude, timestamp },
 			},
 		}) => {
-			const p1 = driverLocations_pub({
+			await driverLocations_pub({
 				driver_id,
 				latitude,
 				longitude,
 				recorded_at: timestamp,
 			})
-			const p2 = db
-				.insert(driverLocations_schema)
-				.values({
-					driver_id,
-					latitude,
-					longitude,
-					recorded_at: new Date(timestamp),
-				})
-				.onConflictDoUpdate({
-					target: [
-						driverLocations_schema.driver_id,
-						driverLocations_schema.recorded_at,
-					],
-					set: {
-						latitude,
-						longitude,
-					},
-				})
-			await Promise.allSettled([p1, p2])
 		},
 		{
 			// validate body
