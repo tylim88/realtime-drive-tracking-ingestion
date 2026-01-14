@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia'
-import { driverLocations_pub } from '@/pubsub'
+import { driverLocations_publish } from '@/streaming'
 
 export const event_post = () =>
 	new Elysia().post(
@@ -9,7 +9,7 @@ export const event_post = () =>
 				data: { driver_id, latitude, longitude, timestamp },
 			},
 		}) => {
-			await driverLocations_pub({
+			await driverLocations_publish({
 				driver_id,
 				latitude,
 				longitude,

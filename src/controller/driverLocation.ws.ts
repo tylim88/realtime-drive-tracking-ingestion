@@ -3,7 +3,7 @@ import { Value } from '@sinclair/typebox/value'
 import { and, desc, eq, gte } from 'drizzle-orm'
 import { Elysia, t } from 'elysia'
 import { db, driverLocations_schema } from '@/db'
-import { driverLocations_sub } from '@/pubsub'
+import { driverLocations_consume } from '@/streaming'
 
 export const driverLocation_ws = () => {
 	const api = new Elysia().ws('/driverLocation', {
@@ -88,7 +88,7 @@ export const driverLocation_ws = () => {
 		>
 	>()
 	// do not listen in ws open event because we only need one redis connection
-	driverLocations_sub(({ driver_id, latitude, longitude, recorded_at }) => {
+	driverLocations_consume(({ driver_id, latitude, longitude, recorded_at }) => {
 		subscribers.get(driver_id)?.forEach((ws) => {
 			ws.send({
 				type: 'data_new',
